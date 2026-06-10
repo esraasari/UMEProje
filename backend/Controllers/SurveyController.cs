@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UMEProje.Data;
 using UMEProje.Models;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using QuestPDF.Helpers;
 
 namespace UMEProje.Controllers
 {
@@ -162,6 +165,131 @@ namespace UMEProje.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Hata oluştu", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Onaylanan anket için kalibrasyon sertifikası oluştur ve indir
+        /// </summary>
+        /// <param name="id">Anket ID</param>
+        /// <returns>PDF sertifikası</returns>
+        [HttpGet("{id}/certificate")]
+        public async Task<IActionResult> GetCertificate(int id)
+        {
+            try
+            {
+                var survey = await _context.CalibrationSurveys
+                    .Include(s => s.LabClient)
+                    .FirstOrDefaultAsync(s => s.Id == id);
+
+                if (survey == null)
+                    return NotFound(new { message = "Anket bulunamadı" });
+
+                if (!survey.IsApproved)
+                    return BadRequest(new { message = "Sadece onaylı anketler için sertifika oluşturulabilir" });
+
+                // QuestPDF ile PDF oluştur
+                var pdfBytes = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(40);
+
+                        page.Content().Column(col =>
+                        {
+                            // Başlık
+                            col.Item().AlignCenter().Text("KALİBRASYON SERTİFİKASI")
+                                .FontSize(24)
+                                .Bold()
+                                .FontColor("#1F2937");
+
+                            col.Item().PaddingVertical(5).AlignCenter().Text("TUBITAK UME")
+                                .FontSize(14)
+                                .FontColor("#6B7280");
+
+                            col.Item().PaddingBottom(30).Text("");
+
+                            // Sertifika Numarası ve Tarih
+                            col.Item().PaddingBottom(30).Row(row =>
+                            {
+                                row.RelativeItem().Column(innerCol =>
+                                {
+                                    innerCol.Item().Text("Sertifika No:").FontSize(10).FontColor("#6B7280");
+                                    innerCol.Item().PaddingTop(3).Text($"UME-{survey.Id:D6}").FontSize(12).Bold();
+                                });
+
+                                row.RelativeItem().AlignRight().Column(innerCol =>
+                                {
+                                    innerCol.Item().Text("Tarih:").FontSize(10).FontColor("#6B7280");
+                                    innerCol.Item().PaddingTop(3).Text(DateTime.UtcNow.ToString("dd.MM.yyyy")).FontSize(12).Bold();
+                                });
+                            });
+
+                            // Bilgi Kutusu
+                            col.Item().PaddingBottom(30).Border(1).BorderColor("#E5E7EB").Padding(20).Column(infoCol =>
+                            {
+                                infoCol.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Column(innerCol =>
+                                    {
+                                        innerCol.Item().Text("Firma Adı").FontSize(10).FontColor("#6B7280");
+                                        innerCol.Item().PaddingTop(3).PaddingBottom(15).Text(survey.LabClient?.CompanyName ?? "N/A").FontSize(12).Bold();
+                                        innerCol.Item().Text("Vergi Numarası").FontSize(10).FontColor("#6B7280");
+                                        innerCol.Item().PaddingTop(3).Text(survey.LabClient?.TaxNumber ?? "N/A").FontSize(12).Bold();
+                                    });
+
+                                    row.RelativeItem().Column(innerCol =>
+                                    {
+                                        innerCol.Item().Text("Cihaz Adı").FontSize(10).FontColor("#6B7280");
+                                        innerCol.Item().PaddingTop(3).PaddingBottom(15).Text(survey.DeviceName).FontSize(12).Bold();
+                                        innerCol.Item().Text("Kategori").FontSize(10).FontColor("#6B7280");
+                                        innerCol.Item().PaddingTop(3).Text(survey.LabCategory).FontSize(12).Bold();
+                                    });
+                                });
+                            });
+
+                            // Onay Metni
+                            col.Item().PaddingBottom(40).Text(
+                                "Bu sertifika, işaretlenen cihazın TUBITAK Ulusal Metroloji Enstitüsü (UME) tarafından kalibrasyon prosesinden başarıyla geçtiğini " +
+                                "ve belirtilen laboratuvar kategorisinde yeterli olduğunu doğrular."
+                            ).FontSize(10).LineHeight(1.5f).FontColor("#374151");
+
+                            // İmza Bölümü
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem().Column(innerCol =>
+                                {
+                                    innerCol.Item().Text("Mühendis İmzası").FontSize(10).FontColor("#6B7280");
+                                    innerCol.Item().PaddingTop(40).BorderTop(1).BorderColor("#E5E7EB").Text("");
+                                });
+
+                                row.RelativeItem().Column(innerCol =>
+                                {
+                                    innerCol.Item().AlignCenter().Text("Kurum Mühür").FontSize(10).FontColor("#6B7280");
+                                    innerCol.Item().PaddingTop(40).BorderTop(1).BorderColor("#E5E7EB").Text("");
+                                });
+
+                                row.RelativeItem().Column(innerCol =>
+                                {
+                                    innerCol.Item().AlignRight().Text("Onay Tarihi").FontSize(10).FontColor("#6B7280");
+                                    innerCol.Item().PaddingTop(40).BorderTop(1).BorderColor("#E5E7EB").Text("");
+                                });
+                            });
+
+                            // Altbilgi
+                            col.Item().PaddingTop(60).AlignCenter().Text("TUBITAK Ulusal Metroloji Enstitüsü")
+                                .FontSize(8)
+                                .FontColor("#9CA3AF");
+                        });
+                    });
+                }).GeneratePdf();
+
+                return File(pdfBytes, "application/pdf", $"Sertifika-{survey.Id}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Sertifika oluşturma hatası", error = ex.Message });
             }
         }
 

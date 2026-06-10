@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj": {}
+    "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj": {}
   },
   "projects": {
-    "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj": {
+    "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj",
+        "projectUniqueName": "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj",
         "projectName": "UMEProje",
-        "projectPath": "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj",
+        "projectPath": "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj",
         "packagesPath": "/Users/esra/.nuget/packages/",
-        "outputPath": "/Users/esra/Documents/workspace/UMEProje/backend/obj/",
+        "outputPath": "/Users/esra/Documents/workspace/UmeProje/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/esra/.nuget/NuGet/NuGet.Config"
@@ -63,6 +63,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.4, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.6.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

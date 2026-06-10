@@ -78,6 +78,13 @@
             <param name="request">Onay durumu (IsApproved: true/false)</param>
             <returns>Güncellenmiş anket</returns>
         </member>
+        <member name="M:UMEProje.Controllers.SurveysController.GetCertificate(System.Int32)">
+            <summary>
+            Onaylanan anket için kalibrasyon sertifikası oluştur ve indir
+            </summary>
+            <param name="id">Anket ID</param>
+            <returns>PDF sertifikası</returns>
+        </member>
         <member name="M:UMEProje.Controllers.SurveysController.DeleteCalibrationSurvey(System.Int32)">
             <summary>
             Anketi sil

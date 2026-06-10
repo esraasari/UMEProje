@@ -5,6 +5,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using UMEProje.Data;
+using QuestPDF.Infrastructure;
+
+// QuestPDF License Setup (Development Mode)
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 

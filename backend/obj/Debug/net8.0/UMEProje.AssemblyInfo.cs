@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("TUBITAK UME Kalibrasyon ve Laboratuvar Yeterlilik Anket Sistemi")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8843938a7b40b2c1129c0e4ffdd8df0877346e4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+85c92438d0f37711058e95426589a41081ee78ff")]
 [assembly: System.Reflection.AssemblyProductAttribute("UMEProje")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UMEProje")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
