@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>UMEProje</name>
+    </assembly>
+    <members>
+        <member name="M:UMEProje.Controllers.LabClientsController.GetLabClients(System.String,System.Int32,System.Int32)">
+            <summary>
+            Tüm kurumsal firmaları sayfalama ve filtreleme desteğiyle listeler.
+            </summary>
+            <param name="search">Firma adı veya vergi numarası arama metni.</param>
+            <param name="page">Sayfa numarası.</param>
+            <param name="pageSize">Sayfa başına kayıt sayısı.</param>
+            <returns>Sayfalama bilgileri ve firma listesi.</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.LabClientsController.GetLabClient(System.Int32)">
+            <summary>
+            Belirtilen ID ile firma bilgisini getirir.
+            </summary>
+            <param name="id">Firma ID.</param>
+            <returns>Firma bilgileri.</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.LabClientsController.CreateLabClient(UMEProje.Models.LabClient)">
+            <summary>
+            Yeni bir kurumsal firma ekler.
+            </summary>
+            <param name="labClient">Firma bilgileri.</param>
+            <returns>Oluşturulan firma.</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.LabClientsController.UpdateLabClient(System.Int32,UMEProje.Models.LabClient)">
+            <summary>
+            Firma bilgilerini günceller.
+            </summary>
+            <param name="id">Firma ID.</param>
+            <param name="labClient">Güncellenmiş firma bilgileri.</param>
+            <returns>Güncellenmiş firma.</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.LabClientsController.DeleteLabClient(System.Int32)">
+            <summary>
+            Firmayı siler.
+            </summary>
+            <param name="id">Firma ID.</param>
+            <returns>Silme işlem sonucu.</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.SurveysController.GetCalibrationSurveys">
+            <summary>
+            Tüm kalibrasyon anketlerini listele
+            </summary>
+            <returns>Kalibrasyon anketleri listesi</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.SurveysController.GetCalibrationSurvey(System.Int32)">
+            <summary>
+            Belirtilen ID ile anketi getir
+            </summary>
+            <param name="id">Anket ID</param>
+            <returns>Anket bilgileri</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.SurveysController.CreateCalibrationSurvey(UMEProje.Models.CalibrationSurvey)">
+            <summary>
+            Yeni bir kalibrasyon anketi ekle (dış firmalardan cihaz kalibrasyon talebi)
+            </summary>
+            <param name="survey">Anket bilgileri</param>
+            <returns>Oluşturulan anket</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.SurveysController.UpdateCalibrationSurvey(System.Int32,UMEProje.Models.CalibrationSurvey)">
+            <summary>
+            Anketi güncelle
+            </summary>
+            <param name="id">Anket ID</param>
+            <param name="survey">Güncellenmiş anket bilgileri</param>
+            <returns>Güncellenmiş anket</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.SurveysController.ToggleApproval(System.Int32,UMEProje.Controllers.ApprovalRequest)">
+            <summary>
+            UME mühendisinin anketi onaylaması/reddetmesi (IsApproved toggle)
+            </summary>
+            <param name="id">Anket ID</param>
+            <param name="request">Onay durumu (IsApproved: true/false)</param>
+            <returns>Güncellenmiş anket</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.SurveysController.DeleteCalibrationSurvey(System.Int32)">
+            <summary>
+            Anketi sil
+            </summary>
+            <param name="id">Anket ID</param>
+            <returns>Silme işlem sonucu</returns>
+        </member>
+        <member name="T:UMEProje.Controllers.ApprovalRequest">
+            <summary>
+            Onay talebi için request modeli
+            </summary>
+        </member>
+    </members>
+</doc>
