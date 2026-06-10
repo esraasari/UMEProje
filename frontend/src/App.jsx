@@ -6,16 +6,37 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
+  Download,
   Factory,
   Loader2,
   RefreshCw,
   Search,
   ShieldCheck,
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import "./App.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5088";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5080";
 const PAGE_SIZE = 10;
+
+// Mock veri: Cihazın ölçüm sapması (Deviation) verileri
+const generateMockData = (surveyId) => [
+  { day: "1", deviation: 0.02 + (surveyId % 3) * 0.01 },
+  { day: "2", deviation: 0.05 - (surveyId % 2) * 0.02 },
+  { day: "3", deviation: -0.01 + (surveyId % 4) * 0.01 },
+  { day: "4", deviation: 0.03 - (surveyId % 3) * 0.01 },
+  { day: "5", deviation: 0.01 + (surveyId % 5) * 0.01 },
+  { day: "6", deviation: -0.02 + (surveyId % 2) * 0.02 },
+  { day: "7", deviation: 0.04 - (surveyId % 4) * 0.01 },
+];
 
 function normalizeSurvey(survey) {
   return {
@@ -65,6 +86,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
   const [approvingSurveyId, setApprovingSurveyId] = useState(null);
+  const [downloadingSurveyId, setDownloadingSurveyId] = useState(null);
 
   const selectedClient = useMemo(
     () => clients.find((client) => client.id === selectedClientId) ?? null,
@@ -206,6 +228,36 @@ export default function App() {
 
   function refreshClients() {
     fetchClients();
+  }
+
+  async function downloadCertificate(surveyId) {
+    setDownloadingSurveyId(surveyId);
+    
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/Surveys/${surveyId}/certificate`
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Sertifika indirilirken hata oluştu. HTTP ${response.status}`
+        );
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Sertifika-${surveyId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (downloadError) {
+      setError(downloadError.message || "Sertifika indirilemedi.");
+    } finally {
+      setDownloadingSurveyId(null);
+    }
   }
 
   return (
@@ -400,6 +452,32 @@ export default function App() {
                       />
                       <div>
                         <h4>{survey.deviceName}</h4>
+                        <div className="survey-chart">
+                          <ResponsiveContainer width="100%" height={180}>
+                            <LineChart data={generateMockData(survey.id)}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                              <XAxis dataKey="day" stroke="#6B7280" />
+                              <YAxis stroke="#6B7280" />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#ffffff",
+                                  border: "1px solid #E5E7EB",
+                                  borderRadius: "6px",
+                                }}
+                                formatter={(value) => `${value.toFixed(3)} mm`}
+                                labelFormatter={(label) => `Gün ${label}`}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="deviation"
+                                stroke="#DC2626"
+                                strokeWidth={2}
+                                dot={{ fill: "#DC2626", r: 4 }}
+                                activeDot={{ r: 6 }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
                         <div className="survey-meta">
                           <span>Seri No: {survey.serialNo}</span>
                           <span>{survey.labCategory}</span>
@@ -430,6 +508,23 @@ export default function App() {
                             <CheckCircle2 size={20} />
                           )}
                           Onayla
+                        </button>
+                      )}
+
+                      {survey.isApproved && (
+                        <button
+                          className="certificate-button"
+                          disabled={downloadingSurveyId === survey.id}
+                          onClick={() => downloadCertificate(survey.id)}
+                          type="button"
+                          title="Sertifikayı indir"
+                        >
+                          {downloadingSurveyId === survey.id ? (
+                            <Loader2 className="spin" size={20} />
+                          ) : (
+                            <Download size={20} />
+                          )}
+                          Sertifika İndir
                         </button>
                       )}
                     </div>
