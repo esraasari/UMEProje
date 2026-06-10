@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using UMEProje.Data;
 using QuestPDF.Infrastructure;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 // QuestPDF License Setup (Development Mode)
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -36,17 +39,62 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure Swagger/OpenAPI
+// ==========================================
+// JWT KİMLİK DOĞRULAMA (AUTHENTICATION) EKLENDİ
+// ==========================================
+var jwtKey = Encoding.ASCII.GetBytes("TubitakUmeSuperSecretKey1234567890!"); 
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+// ==========================================
+// SWAGGER GÜVENLİK AYARLARI EKLENDİ
+// ==========================================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "UME Kalibrasyon API",
         Version = "v1",
         Description = "TUBITAK UME Kalibrasyon ve Laboratuvar Yeterlilik Anket Sistemi"
     });
     
+    // Swagger'a Kilit (Authorize) İkonu Ekleme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Kimlik Doğrulama. Örnek format: 'Bearer {token}'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -73,6 +121,8 @@ app.MapGet("/", () => Results.Redirect("/swagger"));
 app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

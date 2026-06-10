@@ -4,23 +4,6 @@
         <name>UMEProje</name>
     </assembly>
     <members>
-        <member name="M:UMEProje.Controllers.AuthController.Login(UMEProje.Controllers.LoginRequest)">
-            <summary>
-            Giriş yap ve JWT Token al
-            </summary>
-            <param name="request">Kullanıcı adı ve şifre</param>
-            <returns>JWT Token</returns>
-        </member>
-        <member name="M:UMEProje.Controllers.AuthController.GenerateJwtToken(System.String,System.String)">
-            <summary>
-            JWT Token oluştur
-            </summary>
-        </member>
-        <member name="T:UMEProje.Controllers.LoginRequest">
-            <summary>
-            Giriş isteği modeli
-            </summary>
-        </member>
         <member name="M:UMEProje.Controllers.LabClientsController.GetLabClients(System.String,System.Int32,System.Int32)">
             <summary>
             Tüm kurumsal firmaları sayfalama ve filtreleme desteğiyle listeler.
@@ -87,12 +70,12 @@
             <param name="survey">Güncellenmiş anket bilgileri</param>
             <returns>Güncellenmiş anket</returns>
         </member>
-        <member name="M:UMEProje.Controllers.SurveysController.ToggleApproval(System.Int32,UMEProje.Controllers.ApprovalRequest)">
+        <member name="M:UMEProje.Controllers.SurveysController.ToggleApproval(System.Int32)">
             <summary>
             UME mühendisinin anketi onaylaması/reddetmesi (IsApproved toggle)
+            SADECE "Engineer" ROLÜNDEKİLER ERİŞEBİLİR
             </summary>
             <param name="id">Anket ID</param>
-            <param name="request">Onay durumu (IsApproved: true/false)</param>
             <returns>Güncellenmiş anket</returns>
         </member>
         <member name="M:UMEProje.Controllers.SurveysController.GetCertificate(System.Int32)">

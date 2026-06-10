@@ -8,10 +8,13 @@ import {
   ClipboardCheck,
   Download,
   Factory,
+  LogOut,
   Loader2,
+  LockKeyhole,
   RefreshCw,
   Search,
   ShieldCheck,
+  UserRound,
 } from "lucide-react";
 import {
   LineChart,
@@ -25,6 +28,7 @@ import {
 import "./App.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5080";
+const AUTH_LOGIN_URL = "http://localhost:5080/api/auth/login";
 const PAGE_SIZE = 10;
 
 // Mock veri: Cihazın ölçüm sapması (Deviation) verileri
@@ -75,6 +79,11 @@ function getApprovalRatio(surveys) {
 }
 
 export default function App() {
+  const [token, setToken] = useState(() => localStorage.getItem("ume_token") ?? "");
+  const [username, setUsername] = useState("admin");
+  const [password, setPassword] = useState("1234");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [clients, setClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [searchInput, setSearchInput] = useState("");
@@ -122,13 +131,76 @@ export default function App() {
   }, [searchInput]);
 
   useEffect(() => {
+    if (!token) {
+      return;
+    }
+
     const controller = new AbortController();
     fetchClients(controller.signal);
 
     return () => controller.abort();
-  }, [search, page, pageSize]);
+  }, [search, page, pageSize, token]);
+
+  async function handleLogin(event) {
+    event.preventDefault();
+    setIsLoggingIn(true);
+    setLoginError("");
+
+    try {
+      const response = await fetch(AUTH_LOGIN_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Giris basarisiz. HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      const receivedToken =
+        result.token ??
+        result.accessToken ??
+        result.jwt ??
+        result.data?.token ??
+        result.data?.accessToken;
+
+      if (!receivedToken) {
+        throw new Error("Giris basarili ancak token bilgisi alinamadi.");
+      }
+
+      localStorage.setItem("ume_token", receivedToken);
+      setToken(receivedToken);
+      setPassword("");
+      setLoginError("");
+    } catch (loginError) {
+      setLoginError(loginError.message || "Giris islemi tamamlanamadi.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("ume_token");
+    setToken("");
+    setClients([]);
+    setSelectedClientId(null);
+    setTotalItems(0);
+    setError("");
+    setApprovingSurveyId(null);
+    setDownloadingSurveyId(null);
+  }
 
   async function fetchClients(signal) {
+    if (!token) {
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
@@ -177,7 +249,7 @@ export default function App() {
     }
   }
 
-  async function approveSurvey(surveyId) {
+  async function handleToggleApproval(surveyId) {
     setApprovingSurveyId(surveyId);
     setError("");
 
@@ -188,6 +260,7 @@ export default function App() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ isApproved: true }),
         }
@@ -195,6 +268,9 @@ export default function App() {
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
+        if (response.status === 401 || response.status === 403) {
+          handleLogout();
+        }
         throw new Error(
           errorBody?.message || `Onay islemi basarisiz. HTTP ${response.status}`
         );
@@ -258,6 +334,66 @@ export default function App() {
     } finally {
       setDownloadingSurveyId(null);
     }
+  }
+
+  if (!token) {
+    return (
+      <main className="login-shell">
+        <section className="login-panel" aria-label="Giris paneli">
+          <div className="login-brand">
+            <div className="brand-mark">
+              <ShieldCheck size={28} strokeWidth={2.2} />
+            </div>
+            <div>
+              <p className="eyebrow">TUBITAK UME</p>
+              <h1>Muhendis Yetkilendirme Paneli</h1>
+            </div>
+          </div>
+
+          <form className="login-form" onSubmit={handleLogin}>
+            <label>
+              <span>Kullanici adi</span>
+              <div className="login-input">
+                <UserRound size={18} />
+                <input
+                  autoComplete="username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="admin"
+                  type="text"
+                />
+              </div>
+            </label>
+
+            <label>
+              <span>Sifre</span>
+              <div className="login-input">
+                <LockKeyhole size={18} />
+                <input
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="1234"
+                  type="password"
+                />
+              </div>
+            </label>
+
+            {loginError && (
+              <div className="login-error" role="alert">
+                <AlertCircle size={18} />
+                {loginError}
+              </div>
+            )}
+
+            <button className="login-button" disabled={isLoggingIn} type="submit">
+              {isLoggingIn ? <Loader2 className="spin" size={20} /> : <ShieldCheck size={20} />}
+              Giris Yap
+            </button>
+          </form>
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -362,15 +498,21 @@ export default function App() {
               <p className="eyebrow">Kalibrasyon operasyonlari</p>
               <h2>{selectedClient?.companyName ?? "Firma seciniz"}</h2>
             </div>
-            <button
-              className="icon-action"
-              disabled={isLoading}
-              onClick={refreshClients}
-              type="button"
-              aria-label="Verileri yenile"
-            >
-              <RefreshCw className={isLoading ? "spin" : ""} size={19} />
-            </button>
+            <div className="topbar-actions">
+              <button
+                className="icon-action"
+                disabled={isLoading}
+                onClick={refreshClients}
+                type="button"
+                aria-label="Verileri yenile"
+              >
+                <RefreshCw className={isLoading ? "spin" : ""} size={19} />
+              </button>
+              <button className="logout-button" onClick={handleLogout} type="button">
+                <LogOut size={18} />
+                Cikis Yap
+              </button>
+            </div>
           </header>
 
           {error && (
@@ -499,7 +641,7 @@ export default function App() {
                         <button
                           className="approve-button"
                           disabled={approvingSurveyId === survey.id}
-                          onClick={() => approveSurvey(survey.id)}
+                          onClick={() => handleToggleApproval(survey.id)}
                           type="button"
                         >
                           {approvingSurveyId === survey.id ? (

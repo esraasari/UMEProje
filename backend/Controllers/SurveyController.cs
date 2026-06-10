@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using UMEProje.Data;
 using UMEProje.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace UMEProje.Controllers
 {
@@ -139,13 +138,13 @@ namespace UMEProje.Controllers
 
         /// <summary>
         /// UME mühendisinin anketi onaylaması/reddetmesi (IsApproved toggle)
+        /// SADECE "Engineer" ROLÜNDEKİLER ERİŞEBİLİR
         /// </summary>
         /// <param name="id">Anket ID</param>
-        /// <param name="request">Onay durumu (IsApproved: true/false)</param>
         /// <returns>Güncellenmiş anket</returns>
-        [Authorize(Roles = "Engineer")]
         [HttpPost("{id}/toggle-approval")]
-        public async Task<IActionResult> ToggleApproval(int id, [FromBody] ApprovalRequest request)
+        [Authorize(Roles = "Engineer")] // 🔒 Güvenlik Kilidi!
+        public async Task<IActionResult> ToggleApproval(int id)
         {
             try
             {
@@ -153,15 +152,16 @@ namespace UMEProje.Controllers
                 if (survey == null)
                     return NotFound(new { message = "Anket bulunamadı" });
 
-                survey.IsApproved = request.IsApproved;
-                survey.Status = request.IsApproved ? "Approved" : "Rejected";
+                // Dışarıdan veri beklemek yerine, mevcut durumu otomatik tersine çeviriyoruz (True ise False, False ise True yap)
+                survey.IsApproved = !survey.IsApproved;
+                survey.Status = survey.IsApproved ? "Approved" : "Rejected";
                 survey.UpdatedAt = DateTime.UtcNow;
 
                 _context.CalibrationSurveys.Update(survey);
                 await _context.SaveChangesAsync();
 
                 return Ok(new { 
-                    message = request.IsApproved ? "Anket onaylandı" : "Anket reddedildi", 
+                    message = survey.IsApproved ? "Anket onaylandı" : "Anket reddedildi", 
                     data = survey 
                 });
             }

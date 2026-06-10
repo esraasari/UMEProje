@@ -1,5 +1,25 @@
+# =========================
+# 1. FRONTEND (React / Node)
+# =========================
 node_modules/
 dist/
+build/
 .env
 .env.local
 npm-debug.log*
+yarn-error.log*
+
+# =========================
+# 2. BACKEND (C# / .NET Core)
+# =========================
+[Bb]in/
+[Oo]bj/
+*.user
+appsettings.Development.json
+
+# =========================
+# 3. İŞLETİM SİSTEMİ VE IDE (Mac / VS Code)
+# =========================
+.DS_Store
+.vscode/
+.idea/
