@@ -4,6 +4,23 @@
         <name>UMEProje</name>
     </assembly>
     <members>
+        <member name="M:UMEProje.Controllers.AuthController.Login(UMEProje.Controllers.LoginRequest)">
+            <summary>
+            Giriş yap ve JWT Token al
+            </summary>
+            <param name="request">Kullanıcı adı ve şifre</param>
+            <returns>JWT Token</returns>
+        </member>
+        <member name="M:UMEProje.Controllers.AuthController.GenerateJwtToken(System.String,System.String)">
+            <summary>
+            JWT Token oluştur
+            </summary>
+        </member>
+        <member name="T:UMEProje.Controllers.LoginRequest">
+            <summary>
+            Giriş isteği modeli
+            </summary>
+        </member>
         <member name="M:UMEProje.Controllers.LabClientsController.GetLabClients(System.String,System.Int32,System.Int32)">
             <summary>
             Tüm kurumsal firmaları sayfalama ve filtreleme desteğiyle listeler.

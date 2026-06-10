@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using UMEProje.Data;
 using UMEProje.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
+
 
 namespace UMEProje.Controllers
 {
@@ -141,6 +143,7 @@ namespace UMEProje.Controllers
         /// <param name="id">Anket ID</param>
         /// <param name="request">Onay durumu (IsApproved: true/false)</param>
         /// <returns>Güncellenmiş anket</returns>
+        [Authorize(Roles = "Engineer")]
         [HttpPost("{id}/toggle-approval")]
         public async Task<IActionResult> ToggleApproval(int id, [FromBody] ApprovalRequest request)
         {

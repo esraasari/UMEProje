@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj": {}
+    "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj": {}
   },
   "projects": {
-    "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj": {
+    "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj",
+        "projectUniqueName": "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj",
         "projectName": "UMEProje",
-        "projectPath": "/Users/esra/Documents/workspace/UmeProje/backend/UMEProje.csproj",
+        "projectPath": "/Users/esra/Documents/workspace/UMEProje/backend/UMEProje.csproj",
         "packagesPath": "/Users/esra/.nuget/packages/",
-        "outputPath": "/Users/esra/Documents/workspace/UmeProje/backend/obj/",
+        "outputPath": "/Users/esra/Documents/workspace/UMEProje/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/esra/.nuget/NuGet/NuGet.Config"
@@ -46,6 +46,10 @@
           "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.4, )"
@@ -71,6 +75,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[7.0.3, )"
             }
           },
           "imports": [

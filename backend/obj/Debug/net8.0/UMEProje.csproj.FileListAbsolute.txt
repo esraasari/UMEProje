@@ -307,13 +307,10 @@
 /Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/osx-x64/native/libQuestPdfSkia.dylib
 /Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/osx-x64/native/libqpdf.dylib
 /Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x64/native/QuestPdfSkia.dll
-/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x64/native/libgcc_s_seh-1.dll
-/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x64/native/libstdc++-6.dll
-/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x64/native/libwinpthread-1.dll
 /Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x64/native/qpdf.dll
 /Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x86/native/QuestPdfSkia.dll
-/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x86/native/libgcc_s_dw2-1.dll
-/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x86/native/libstdc++-6.dll
-/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x86/native/libwinpthread-1.dll
 /Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-x86/native/qpdf.dll
 /Users/esra/Documents/workspace/UMEProje/backend/obj/Debug/net8.0/UMEProje.sourcelink.json
+/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-arm64/native/QuestPdfSkia.dll
+/Users/esra/Documents/workspace/UMEProje/backend/bin/Debug/net8.0/runtimes/win-arm64/native/qpdf.dll
